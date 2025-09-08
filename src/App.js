@@ -3,8 +3,9 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import VerificationForm from './components/VerificationForm';
-import ApplicationForm from './components/ApplicationForm';
 import ApplicationsList from './components/ApplicationsList';
+import PetsList from './components/PetsList';
+import AdminPanel from './components/AdminPanel';
 import Navigation from './components/Navigation';
 import './App.css';
 
@@ -53,14 +54,15 @@ function AppContent() {
 
   const renderCurrentView = () => {
     switch (currentView) {
-      case 'newApplication':
-        return <ApplicationForm />;
+      case 'pets':
+        return <PetsList />;
       case 'myApplications':
         return <ApplicationsList />;
+      case 'admin':
+        return <AdminPanel />;
       default:
-        // Vista por defecto: nueva aplicación
-        setCurrentView('newApplication');
-        return <ApplicationForm />;
+        setCurrentView('pets');
+        return <PetsList />;
     }
   };
 

@@ -33,17 +33,17 @@ const Navigation = ({ currentView, setCurrentView }) => {
         
         <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
           <button
-            onClick={() => setCurrentView('newApplication')}
+            onClick={() => setCurrentView('pets')}
             style={{
               padding: '8px 16px',
-              backgroundColor: currentView === 'newApplication' ? '#007bff' : 'transparent',
+              backgroundColor: currentView === 'pets' ? '#007bff' : 'transparent',
               color: 'white',
               border: '1px solid #007bff',
               borderRadius: '4px',
               cursor: 'pointer'
             }}
           >
-            Nueva Postulación
+            Ver Mascotas
           </button>
           
           <button
@@ -59,9 +59,26 @@ const Navigation = ({ currentView, setCurrentView }) => {
           >
             Mis Postulaciones
           </button>
+
+          {/* Mostrar panel admin si el usuario tiene rol de admin */}
+          {user.roles && user.roles.includes('ROLE_ADMIN') && (
+            <button
+              onClick={() => setCurrentView('admin')}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: currentView === 'admin' ? '#007bff' : 'transparent',
+                color: 'white',
+                border: '1px solid #007bff',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Panel Admin
+            </button>
+          )}
           
           <div style={{ color: 'white', fontSize: '14px' }}>
-            Hola, {user.name}
+            Hola, {user.firstName || user.name || user.email}
           </div>
           
           <button

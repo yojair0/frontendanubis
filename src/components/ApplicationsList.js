@@ -8,16 +8,16 @@ const ApplicationsList = () => {
 
   useEffect(() => {
     fetchApplications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchApplications = async () => {
     setLoading(true);
     try {
-      const response = await applicationService.getMyApplications();
-      setApplications(response.data);
+      const applicationsData = await applicationService.getMyApplications();
+      setApplications(applicationsData);
     } catch (error) {
       setError('Error al cargar las postulaciones');
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
@@ -27,7 +27,7 @@ const ApplicationsList = () => {
     switch (status) {
       case 'PENDING':
         return '#ffc107';
-      case 'ACCEPTED':
+      case 'APPROVED':
         return '#28a745';
       case 'REJECTED':
         return '#dc3545';
@@ -40,25 +40,12 @@ const ApplicationsList = () => {
     switch (status) {
       case 'PENDING':
         return 'Pendiente';
-      case 'ACCEPTED':
-        return 'Aceptada';
+      case 'APPROVED':
+        return 'Aprobada';
       case 'REJECTED':
         return 'Rechazada';
       default:
         return status;
-    }
-  };
-
-  const getAnimalTypeText = (type) => {
-    switch (type) {
-      case 'DOG':
-        return 'Perro';
-      case 'CAT':
-        return 'Gato';
-      case 'OTHER':
-        return 'Otro';
-      default:
-        return type;
     }
   };
 
@@ -76,7 +63,7 @@ const ApplicationsList = () => {
       
       {applications.length === 0 ? (
         <p style={{ textAlign: 'center', color: '#666' }}>
-          No tienes postulaciones aún. Crea tu primera postulación.
+          No tienes postulaciones aún. ¡Ve a la sección de mascotas y postula para adoptar!
         </p>
       ) : (
         <div>
@@ -93,7 +80,7 @@ const ApplicationsList = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                 <h3 style={{ margin: 0, color: '#333' }}>
-                  Animal: {application.animalName}
+                  Postulación #{application.id.slice(-6)}
                 </h3>
                 <span 
                   style={{ 
@@ -110,23 +97,31 @@ const ApplicationsList = () => {
               </div>
               
               <div style={{ marginBottom: '10px' }}>
-                <strong>Tipo:</strong> {getAnimalTypeText(application.animalType)}
+                <strong>Mascota ID:</strong> {application.petId}
               </div>
               <div style={{ marginBottom: '10px' }}>
-                <strong>Motivación:</strong> {application.motivacion}
+                <strong>Motivo:</strong> {application.reason}
               </div>
               <div style={{ marginBottom: '10px' }}>
-                <strong>Experiencia:</strong> {application.experiencia}
+                <strong>Experiencia:</strong> {application.experience}
               </div>
               <div style={{ marginBottom: '10px' }}>
-                <strong>Vivienda:</strong> {application.vivienda}
+                <strong>Espacio de vivienda:</strong> {application.livingSpace}
               </div>
               <div style={{ marginBottom: '10px' }}>
-                <strong>Disponibilidad:</strong> {application.disponibilidad}
+                <strong>Horario de trabajo:</strong> {application.workSchedule}
+              </div>
+              <div style={{ marginBottom: '10px' }}>
+                <strong>Tiene otras mascotas:</strong> {application.hasOtherPets ? 'Sí' : 'No'}
               </div>
               <div style={{ marginBottom: '10px', fontSize: '14px', color: '#666' }}>
-                <strong>Fecha de postulación:</strong> {new Date(application.submittedAt).toLocaleDateString()}
+                <strong>Fecha de postulación:</strong> {new Date(application.createdAt).toLocaleDateString()}
               </div>
+              {application.adminNotes && (
+                <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#e9ecef', borderRadius: '5px' }}>
+                  <strong>Notas del administrador:</strong> {application.adminNotes}
+                </div>
+              )}
             </div>
           ))}
         </div>
