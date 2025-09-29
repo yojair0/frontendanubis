@@ -14,6 +14,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [pendingEmail, setPendingEmail] = useState(null);
 
   useEffect(() => {
     const savedUser = authService.getCurrentUser();
@@ -26,15 +27,16 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const result = await authService.register(userData);
+      setPendingEmail(userData.email);
       return result;
     } catch (error) {
       throw error;
     }
   };
 
-  const verifyCode = async (email, verificationCode) => {
+  const verifyCode = async (verificationCode) => {
     try {
-      const result = await authService.verifyCode(email, verificationCode);
+      const result = await authService.verifyCode({ email: pendingEmail }, verificationCode);
       setUser(result);
       return result;
     } catch (error) {

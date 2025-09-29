@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { petService } from '../services/petService';
 import AdoptionForm from './AdoptionForm';
 
+//HOME SCREEN ANIMALES
+
 const PetsList = () => {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);

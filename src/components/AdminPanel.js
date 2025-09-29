@@ -17,18 +17,25 @@ const AdminPanel = () => {
     try {
       setLoading(true);
       
-      // Obtener todas las postulaciones
+      // Obtener todas las postulaciones FUNCIONA
       const applicationsData = await applicationService.getAllApplications();
+      console.log(applicationsData);
       setApplications(applicationsData);
+
+      // Obtener todas las postulaciones NO FUNCIONA
+      const applicationsFData = await applicationService.getApplications();
+      console.log(applicationsFData);
+      setApplications(applicationsFData);
       
-      // Obtener información de mascotas para mostrar nombres
+
+      // Obtener información de mascotas para mostrar nombres FUNCIONA (MUESTRA NOMBRE ID)
       const petsData = await petService.getAllPets();
+      console.log(petsData)
       const petsMap = {};
       petsData.forEach(pet => {
         petsMap[pet.id] = pet;
       });
       setPets(petsMap);
-      
     } catch (err) {
       setError('Error al cargar los datos');
       console.error('Error:', err);
@@ -37,10 +44,12 @@ const AdminPanel = () => {
     }
   };
 
+  //FUNCIONA (SOLO FUNDACIONES) ELIMINAR DE ADMIN
   const updateApplicationStatus = async (applicationId, newStatus, adminNotes = '') => {
     try {
       setUpdatingStatus(applicationId);
       await applicationService.updateApplicationStatus(applicationId, newStatus, adminNotes);
+      console.log(applicationService)
       
       // Actualizar la lista local
       setApplications(prev => 
@@ -63,7 +72,7 @@ const AdminPanel = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'PENDING': return '#ffc107';
-      case 'APPROVED': return '#28a745';
+      case 'ACCEPTED': return '#28a745';
       case 'REJECTED': return '#dc3545';
       default: return '#6c757d';
     }
@@ -72,7 +81,7 @@ const AdminPanel = () => {
   const getStatusText = (status) => {
     switch (status) {
       case 'PENDING': return 'Pendiente';
-      case 'APPROVED': return 'Aprobada';
+      case 'ACCEPTED': return 'Aprobada';
       case 'REJECTED': return 'Rechazada';
       default: return status;
     }
@@ -81,7 +90,7 @@ const AdminPanel = () => {
   const getStats = () => {
     const total = applications.length;
     const pending = applications.filter(app => app.status === 'PENDING').length;
-    const approved = applications.filter(app => app.status === 'APPROVED').length;
+    const approved = applications.filter(app => app.status === 'ACCEPTED').length;
     const rejected = applications.filter(app => app.status === 'REJECTED').length;
     
     return { total, pending, approved, rejected };
@@ -188,7 +197,7 @@ const AdminPanel = () => {
               {application.status === 'PENDING' && (
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <button
-                    onClick={() => updateApplicationStatus(application.id, 'APPROVED', 'Postulación aprobada')}
+                    onClick={() => updateApplicationStatus(application.id, 'ACCEPTED', 'Postulación aprobada')}
                     disabled={updatingStatus === application.id}
                     style={{
                       backgroundColor: '#28a745',

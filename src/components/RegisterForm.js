@@ -29,6 +29,8 @@ const RegisterForm = ({ onSwitchToLogin, onRegistrationSuccess }) => {
       
       if (error.response?.status === 403) {
         errorMessage = 'Error 403: Problema de permisos.';
+        console.log(errorMessage);
+        
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.message) {

@@ -15,7 +15,13 @@ export const applicationService = {
 
   // Ver todas las postulaciones (solo admin)
   getAllApplications: async () => {
-    const response = await api.get('/applications');
+    const response = await api.get('/applications/all');
+    return response.data;
+  },
+
+  // Ver mis postulaciones (solo fundacion)
+  getApplications: async () => {
+    const response = await api.get('/applications/foundation/my-applications');
     return response.data;
   },
 
@@ -25,6 +31,7 @@ export const applicationService = {
       status,
       adminNotes
     });
+    console.log(response.data);
     return response.data;
   }
 };

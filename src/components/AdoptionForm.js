@@ -32,6 +32,7 @@ const AdoptionForm = ({ pet, onClose, onSuccess }) => {
       onSuccess && onSuccess();
       onClose && onClose();
     } catch (err) {
+      console.log(formData);
       setError(err.response?.data?.message || 'Error al enviar la postulación');
     } finally {
       setLoading(false);

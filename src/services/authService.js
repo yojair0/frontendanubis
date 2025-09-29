@@ -2,23 +2,25 @@ import api from './api';
 
 export const authService = {
   register: async (userData) => {
-    // Dividir fullName en firstName y lastName
-    const nameParts = userData.fullName.trim().split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
-    
+
     const response = await api.post('/auth/register', {
-      firstName: firstName,
-      lastName: lastName,
+      fullName: userData.fullName,
       email: userData.email,
       password: userData.password,
       phone: userData.phone
     });
+    
+    console.log(response.data);
     return response.data;
   },
 
-  verifyCode: async (email, verificationCode) => {
-    const response = await api.post(`/auth/verify-code?email=${email}&code=${verificationCode}`);
+  verifyCode: async (userData, verificationCode) => {
+
+    const response = await api.post(`/auth/verify-email`,{
+      email: userData.email,
+      code: verificationCode
+    });
+    
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data));

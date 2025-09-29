@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import api  from '../services/api';
 
+//HOME SCREEN
 const Navigation = ({ currentView, setCurrentView }) => {
   const { user, logout } = useAuth();
+  const [userRole, setUserRole]  = useState(null);
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      try {
+        if(user){
+          const response = await api.get('/users/role');
+          setUserRole(response.data.role);
+          console.log(response.data.role)
+        }
+      } catch (error) {
+        console.error('Error al obtener el rol del usuario:', error);
+      }
+    };
+
+
+    fetchRole();
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -28,7 +48,7 @@ const Navigation = ({ currentView, setCurrentView }) => {
         padding: '0 20px'
       }}>
         <div style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>
-          Anubis - Adopciones
+          Anubis - Adopciones 
         </div>
         
         <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
@@ -61,7 +81,9 @@ const Navigation = ({ currentView, setCurrentView }) => {
           </button>
 
           {/* Mostrar panel admin si el usuario tiene rol de admin */}
-          {user.roles && user.roles.includes('ROLE_ADMIN') && (
+
+
+          {(userRole === "ADMIN" || userRole === "FOUNDATION") && (
             <button
               onClick={() => setCurrentView('admin')}
               style={{
@@ -78,7 +100,7 @@ const Navigation = ({ currentView, setCurrentView }) => {
           )}
           
           <div style={{ color: 'white', fontSize: '14px' }}>
-            Hola, {user.firstName || user.name || user.email}
+            Hola, {user.fullName}
           </div>
           
           <button
