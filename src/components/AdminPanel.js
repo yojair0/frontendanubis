@@ -7,7 +7,6 @@ const AdminPanel = () => {
   const [pets, setPets] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [updatingStatus, setUpdatingStatus] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -16,21 +15,10 @@ const AdminPanel = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
-      // Obtener todas las postulaciones FUNCIONA
       const applicationsData = await applicationService.getAllApplications();
-      console.log(applicationsData);
       setApplications(applicationsData);
 
-      // Obtener todas las postulaciones NO FUNCIONA
-      const applicationsFData = await applicationService.getApplications();
-      console.log(applicationsFData);
-      setApplications(applicationsFData);
-      
-
-      // Obtener información de mascotas para mostrar nombres FUNCIONA (MUESTRA NOMBRE ID)
       const petsData = await petService.getAllPets();
-      console.log(petsData)
       const petsMap = {};
       petsData.forEach(pet => {
         petsMap[pet.id] = pet;
@@ -41,31 +29,6 @@ const AdminPanel = () => {
       console.error('Error:', err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  //FUNCIONA (SOLO FUNDACIONES) ELIMINAR DE ADMIN
-  const updateApplicationStatus = async (applicationId, newStatus, adminNotes = '') => {
-    try {
-      setUpdatingStatus(applicationId);
-      await applicationService.updateApplicationStatus(applicationId, newStatus, adminNotes);
-      console.log(applicationService)
-      
-      // Actualizar la lista local
-      setApplications(prev => 
-        prev.map(app => 
-          app.id === applicationId 
-            ? { ...app, status: newStatus, adminNotes } 
-            : app
-        )
-      );
-      
-      alert('Estado actualizado exitosamente');
-    } catch (err) {
-      alert('Error al actualizar el estado');
-      console.error('Error:', err);
-    } finally {
-      setUpdatingStatus(null);
     }
   };
 
@@ -92,7 +55,6 @@ const AdminPanel = () => {
     const pending = applications.filter(app => app.status === 'PENDING').length;
     const approved = applications.filter(app => app.status === 'ACCEPTED').length;
     const rejected = applications.filter(app => app.status === 'REJECTED').length;
-    
     return { total, pending, approved, rejected };
   };
 
@@ -103,9 +65,8 @@ const AdminPanel = () => {
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-      <h2>Panel de Administración - Fundación</h2>
-      
-      {/* Estadísticas */}
+      <h2>Panel de Administración</h2>
+
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
@@ -130,7 +91,6 @@ const AdminPanel = () => {
         </div>
       </div>
 
-      {/* Lista de postulaciones */}
       <h3>Todas las Postulaciones</h3>
       {applications.length === 0 ? (
         <p style={{ textAlign: 'center', color: '#666' }}>No hay postulaciones aún.</p>
@@ -191,45 +151,6 @@ const AdminPanel = () => {
                   marginBottom: '15px'
                 }}>
                   <strong>Notas del administrador:</strong> {application.adminNotes}
-                </div>
-              )}
-
-              {application.status === 'PENDING' && (
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <button
-                    onClick={() => updateApplicationStatus(application.id, 'ACCEPTED', 'Postulación aprobada')}
-                    disabled={updatingStatus === application.id}
-                    style={{
-                      backgroundColor: '#28a745',
-                      color: 'white',
-                      border: 'none',
-                      padding: '8px 16px',
-                      borderRadius: '4px',
-                      cursor: updatingStatus === application.id ? 'not-allowed' : 'pointer'
-                    }}
-                  >
-                    {updatingStatus === application.id ? 'Actualizando...' : 'Aprobar'}
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      const notes = prompt('Motivo del rechazo (opcional):');
-                      if (notes !== null) {
-                        updateApplicationStatus(application.id, 'REJECTED', notes || 'Postulación rechazada');
-                      }
-                    }}
-                    disabled={updatingStatus === application.id}
-                    style={{
-                      backgroundColor: '#dc3545',
-                      color: 'white',
-                      border: 'none',
-                      padding: '8px 16px',
-                      borderRadius: '4px',
-                      cursor: updatingStatus === application.id ? 'not-allowed' : 'pointer'
-                    }}
-                  >
-                    Rechazar
-                  </button>
                 </div>
               )}
             </div>

@@ -8,6 +8,8 @@ import PetsList from './components/PetsList';
 import AdminPanel from './components/AdminPanel';
 import Navigation from './components/Navigation';
 import './App.css';
+import FoundationPanel from './components/FundationPanel';
+import MyPetList from './components/MyPetList';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -60,6 +62,10 @@ function AppContent() {
         return <ApplicationsList />;
       case 'admin':
         return <AdminPanel />;
+      case 'fundacion':
+        return <FoundationPanel />;
+      case 'mypets':
+        return <MyPetList />;
       default:
         setCurrentView('pets');
         return <PetsList />;

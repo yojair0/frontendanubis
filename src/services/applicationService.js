@@ -25,7 +25,7 @@ export const applicationService = {
     return response.data;
   },
 
-  // Actualizar estado de postulación (solo admin)
+  // Actualizar estado de postulación (solo fundacion)
   updateApplicationStatus: async (applicationId, status, adminNotes = '') => {
     const response = await api.put(`/applications/${applicationId}/status`, {
       status,
