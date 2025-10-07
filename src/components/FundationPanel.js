@@ -10,7 +10,8 @@ const FoundationPanel = () => {
   const [error, setError] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [showPetForm, setShowPetForm] = useState(false);
-  const [currentView, setCurrentView] = useState('applications'); // 'applications', 'myPets'
+  const [currentView, setCurrentView] = useState('applications');
+  const [myPets, setMyPets] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -19,12 +20,9 @@ const FoundationPanel = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-
-      // Obtener postulaciones de esta fundación
       const applicationsData = await applicationService.getApplications();
       setApplications(applicationsData);
 
-      // Obtener información de mascotas
       const petsData = await petService.getAllPets();
       const petsMap = {};
       petsData.forEach(pet => {
@@ -36,6 +34,15 @@ const FoundationPanel = () => {
       console.error('Error:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchMyPets = async () => {
+    try {
+      const data = await petService.getMyPets();
+      setMyPets(data);
+    } catch (err) {
+      console.error('Error al cargar mis mascotas:', err);
     }
   };
 
@@ -82,7 +89,6 @@ const FoundationPanel = () => {
     const pending = applications.filter(app => app.status === 'PENDING').length;
     const approved = applications.filter(app => app.status === 'ACCEPTED').length;
     const rejected = applications.filter(app => app.status === 'REJECTED').length;
-
     return { total, pending, approved, rejected };
   };
 
@@ -93,9 +99,10 @@ const FoundationPanel = () => {
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+      {/* HEADER */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h2>Panel de Fundación</h2>
-        
+
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
             onClick={() => setCurrentView('applications')}
@@ -110,9 +117,12 @@ const FoundationPanel = () => {
           >
             Postulaciones
           </button>
-          
+
           <button
-            onClick={() => setCurrentView('myPets')}
+            onClick={() => {
+              setCurrentView('myPets');
+              fetchMyPets();
+            }}
             style={{
               padding: '10px 20px',
               backgroundColor: currentView === 'myPets' ? '#007bff' : '#f8f9fa',
@@ -124,7 +134,7 @@ const FoundationPanel = () => {
           >
             Mis Mascotas
           </button>
-          
+
           <button
             onClick={() => setShowPetForm(true)}
             style={{
@@ -142,7 +152,7 @@ const FoundationPanel = () => {
         </div>
       </div>
 
-      {/* Estadísticas */}
+      {/* ESTADÍSTICAS */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -167,7 +177,7 @@ const FoundationPanel = () => {
         </div>
       </div>
 
-      {/* Contenido condicional */}
+      {/* POSTULACIONES */}
       {currentView === 'applications' && (
         <>
           <h3>Postulaciones a Mis Mascotas</h3>
@@ -176,71 +186,96 @@ const FoundationPanel = () => {
           ) : (
             <div>
               {applications.map((application) => (
-            <div key={application.id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', marginBottom: '20px', backgroundColor: '#fff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h4>Postulación #{application.id.slice(-6)}</h4>
-                <span style={{ padding: '5px 15px', borderRadius: '20px', color: 'white', backgroundColor: getStatusColor(application.status), fontSize: '14px', fontWeight: 'bold' }}>{getStatusText(application.status)}</span>
-              </div>
-              <p><strong>Mascota:</strong> {pets[application.petId]?.name || `ID: ${application.petId}`}</p>
-              <p><strong>Usuario:</strong> {application.userId}</p>
-              <p><strong>Motivo:</strong> {application.reason}</p>
-              <p><strong>Experiencia:</strong> {application.experience}</p>
-              <p><strong>Espacio:</strong> {application.livingSpace}</p>
-              <p><strong>Horario:</strong> {application.workSchedule}</p>
+                <div key={application.id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', marginBottom: '20px', backgroundColor: '#fff' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                    <h4>Postulación #{application.id.slice(-6)}</h4>
+                    <span style={{
+                      padding: '5px 15px',
+                      borderRadius: '20px',
+                      color: 'white',
+                      backgroundColor: getStatusColor(application.status),
+                      fontSize: '14px',
+                      fontWeight: 'bold'
+                    }}>{getStatusText(application.status)}</span>
+                  </div>
+                  <p><strong>Mascota:</strong> {pets[application.petId]?.name || `ID: ${application.petId}`}</p>
+                  <p><strong>Usuario:</strong> {application.userId}</p>
+                  <p><strong>Motivo:</strong> {application.reason}</p>
+                  <p><strong>Experiencia:</strong> {application.experience}</p>
+                  <p><strong>Espacio:</strong> {application.livingSpace}</p>
+                  <p><strong>Horario:</strong> {application.workSchedule}</p>
 
-              {application.adminNotes && (
-                <div style={{ backgroundColor: '#e9ecef', padding: '10px', borderRadius: '5px' }}>
-                  <strong>Notas:</strong> {application.adminNotes}
+                  {application.adminNotes && (
+                    <div style={{ backgroundColor: '#e9ecef', padding: '10px', borderRadius: '5px' }}>
+                      <strong>Notas:</strong> {application.adminNotes}
+                    </div>
+                  )}
+
+                  {application.status === 'PENDING' && (
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                      <button
+                        onClick={() => updateApplicationStatus(application.id, 'ACCEPTED', 'Postulación aprobada')}
+                        disabled={updatingStatus === application.id}
+                        style={{ backgroundColor: '#28a745', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px' }}
+                      >
+                        {updatingStatus === application.id ? 'Actualizando...' : 'Aprobar'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          const notes = prompt('Motivo del rechazo (opcional):');
+                          if (notes !== null) {
+                            updateApplicationStatus(application.id, 'REJECTED', notes || 'Postulación rechazada');
+                          }
+                        }}
+                        disabled={updatingStatus === application.id}
+                        style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px' }}
+                      >
+                        Rechazar
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
-
-              {application.status === 'PENDING' && (
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                  <button
-                    onClick={() => updateApplicationStatus(application.id, 'ACCEPTED', 'Postulación aprobada')}
-                    disabled={updatingStatus === application.id}
-                    style={{ backgroundColor: '#28a745', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px' }}
-                  >
-                    {updatingStatus === application.id ? 'Actualizando...' : 'Aprobar'}
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      const notes = prompt('Motivo del rechazo (opcional):');
-                      if (notes !== null) {
-                        updateApplicationStatus(application.id, 'REJECTED', notes || 'Postulación rechazada');
-                      }
-                    }}
-                    disabled={updatingStatus === application.id}
-                    style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px' }}
-                  >
-                    Rechazar
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
+              ))}
             </div>
           )}
         </>
       )}
 
+      {/* MIS MASCOTAS */}
       {currentView === 'myPets' && (
         <div>
           <h3>Mis Mascotas Registradas</h3>
-          <p style={{ textAlign: 'center', color: '#666' }}>
-            Aquí verás todas las mascotas que has registrado para adopción.
-          </p>
+          {myPets.length === 0 ? (
+            <p style={{ textAlign: 'center', color: '#666' }}>
+              No has registrado mascotas aún.
+            </p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
+              {myPets.map(pet => (
+                <div key={pet.id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '15px', backgroundColor: '#fff' }}>
+                  <h4>{pet.name}</h4>
+                  <p><strong>Especie:</strong> {pet.species}</p>
+                  <p><strong>Raza:</strong> {pet.breed}</p>
+                  <p><strong>Edad:</strong> {pet.age}</p>
+                  <p><strong>Tamaño:</strong> {pet.size}</p>
+                  <p><strong>Descripción:</strong> {pet.description}</p>
+                  {pet.imageUrls?.[0] && (
+                    <img src={pet.imageUrls[0]} alt={pet.name} style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', borderRadius: '8px', marginTop: '10px' }} />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Modal de formulario de mascota */}
+      {/* MODAL REGISTRAR MASCOTA */}
       {showPetForm && (
         <PetForm
           onClose={() => setShowPetForm(false)}
           onSuccess={() => {
             setShowPetForm(false);
-            fetchData(); // Recargar datos
+            fetchData();
           }}
         />
       )}

@@ -36,10 +36,10 @@ export const applicationService = {
       console.error('Error decodificando token:', e);
     }
     
-    const body = { status, foundationResponse };
+    const body = { status, adminNotes: foundationResponse };
     
     // Usar endpoint correcto del AdminController según documentación
-    const response = await api.put(`/admin/applications/${applicationId}/status`, body);
+    const response = await api.put(`/applications/${applicationId}/status`, body);
     return response.data;
   },
 
@@ -63,7 +63,7 @@ export const applicationService = {
 
   // Función alternativa de respaldo
   updateApplicationStatusAlternative: async (applicationId, status, foundationResponse = '') => {
-    const response = await api.put(`/admin/applications/${applicationId}/status`, {
+    const response = await api.put(`/applications/${applicationId}/status`, {
       status,
       foundationResponse
     });
