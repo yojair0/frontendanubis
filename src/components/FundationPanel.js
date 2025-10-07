@@ -6,12 +6,30 @@ import PetForm from './PetForm';
 const FoundationPanel = () => {
   const [applications, setApplications] = useState([]);
   const [pets, setPets] = useState({});
+  const [petNames, setPetNames] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [showPetForm, setShowPetForm] = useState(false);
   const [currentView, setCurrentView] = useState('applications');
   const [myPets, setMyPets] = useState([]);
+
+  // Función para obtener nombres de mascotas
+  const fetchPetNames = async (petIds) => {
+    const names = {};
+    
+    for (const petId of petIds) {
+      try {
+        const petData = await petService.getPetById(petId);
+        names[petId] = petData.name;
+      } catch (error) {
+        console.error(`Error al obtener mascota ${petId}:`, error);
+        names[petId] = `ID: ${petId}`; // Fallback al ID si hay error
+      }
+    }
+    
+    return names;
+  };
 
   useEffect(() => {
     fetchData();
@@ -23,6 +41,14 @@ const FoundationPanel = () => {
       const applicationsData = await applicationService.getApplications();
       setApplications(applicationsData);
 
+      // Obtener nombres de mascotas usando los IDs de las postulaciones
+      if (applicationsData.length > 0) {
+        const uniquePetIds = [...new Set(applicationsData.map(app => app.petId))];
+        const names = await fetchPetNames(uniquePetIds);
+        setPetNames(names);
+      }
+
+      // Mantener la lógica original para el mapa de pets (por si se usa en otras partes)
       const petsData = await petService.getAllPets();
       const petsMap = {};
       petsData.forEach(pet => {
@@ -198,7 +224,7 @@ const FoundationPanel = () => {
                       fontWeight: 'bold'
                     }}>{getStatusText(application.status)}</span>
                   </div>
-                  <p><strong>Mascota:</strong> {pets[application.petId]?.name || `ID: ${application.petId}`}</p>
+                  <p><strong>Mascota:</strong> {petNames[application.petId] || 'Cargando...'}</p>
                   <p><strong>Usuario:</strong> {application.userId}</p>
                   <p><strong>Motivo:</strong> {application.reason}</p>
                   <p><strong>Experiencia:</strong> {application.experience}</p>

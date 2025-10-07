@@ -245,6 +245,7 @@ const AdminPanel = () => {
   const [applications, setApplications] = useState([]);
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [pets, setPets] = useState({});
+  const [petNames, setPetNames] = useState({}); // Nombres de mascotas por ID
   const [users, setUsers] = useState({}); // Nuevo estado para usuarios
   const [allPets, setAllPets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -308,11 +309,35 @@ const AdminPanel = () => {
     );
   }
 
+  // Función para obtener nombres de mascotas
+  const fetchPetNames = async (petIds) => {
+    const names = {};
+    
+    for (const petId of petIds) {
+      try {
+        const petData = await petService.getPetById(petId);
+        names[petId] = petData.name;
+      } catch (error) {
+        console.error(`Error al obtener mascota ${petId}:`, error);
+        names[petId] = `ID: ${petId}`;
+      }
+    }
+    
+    return names;
+  };
+
   const fetchData = async () => {
     try {
       setLoading(true);
       const applicationsData = await applicationService.getAllApplications();
       setApplications(applicationsData);
+
+      // Obtener nombres de mascotas usando los IDs de las postulaciones
+      if (applicationsData.length > 0) {
+        const uniquePetIds = [...new Set(applicationsData.map(app => app.petId))];
+        const names = await fetchPetNames(uniquePetIds);
+        setPetNames(names);
+      }
 
       // Obtener datos de mascotas
       const petsData = await petService.getAllPets();
@@ -699,7 +724,7 @@ const AdminPanel = () => {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '15px' }}>
                 <div>
-                  <p><strong>Mascota:</strong> {pets[application.petId]?.name || `ID: ${application.petId}`}</p>
+                  <p><strong>Mascota:</strong> {petNames[application.petId] || 'Cargando...'}</p>
                   <p><strong>Solicitante:</strong> {users[application.userId]?.name || users[application.userId]?.email || `ID: ${application.userId}`}</p>
                   <p><strong>Fecha:</strong> {new Date(application.createdAt).toLocaleDateString()}</p>
                 </div>

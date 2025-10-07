@@ -1,12 +1,31 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { applicationService } from '../services/applicationService';
+import { petService } from '../services/petService';
 import { useToast } from './Toast';
 
 const ApplicationsList = () => {
   const [applications, setApplications] = useState([]);
+  const [petNames, setPetNames] = useState({});
   const [loading, setLoading] = useState(true);
   const [hasShownToast, setHasShownToast] = useState(false);
   const toast = useToast();
+
+  // Función para obtener nombres de mascotas
+  const fetchPetNames = async (petIds) => {
+    const names = {};
+    
+    for (const petId of petIds) {
+      try {
+        const petData = await petService.getPetById(petId);
+        names[petId] = petData.name;
+      } catch (error) {
+        console.error(`Error al obtener mascota ${petId}:`, error);
+        names[petId] = `ID: ${petId}`; // Fallback al ID si hay error
+      }
+    }
+    
+    return names;
+  };
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -14,6 +33,13 @@ const ApplicationsList = () => {
       try {
         const applicationsData = await applicationService.getMyApplications();
         setApplications(applicationsData);
+        
+        // Obtener nombres de mascotas
+        if (applicationsData.length > 0) {
+          const uniquePetIds = [...new Set(applicationsData.map(app => app.petId))];
+          const names = await fetchPetNames(uniquePetIds);
+          setPetNames(names);
+        }
         
         // Solo mostrar toast una vez cuando se cargan las postulaciones
         if (applicationsData.length > 0 && !hasShownToast) {
@@ -151,19 +177,20 @@ const ApplicationsList = () => {
                     borderRadius: '10px'
                   }}>
                     <p style={{ margin: '0 0 8px 0' }}>
-                      <strong style={{ color: '#495057' }}>ID de Mascota:</strong>
+                      <strong style={{ color: '#495057' }}>Mascota:</strong>
                     </p>
                     <p style={{ 
                       margin: 0, 
                       color: '#333', 
                       fontSize: '16px',
-                      fontFamily: 'monospace',
-                      background: '#e9ecef',
-                      padding: '4px 8px',
-                      borderRadius: '4px',
-                      display: 'inline-block'
+                      fontWeight: '500',
+                      background: '#e3f2fd',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      display: 'inline-block',
+                      border: '1px solid #bbdefb'
                     }}>
-                      {application.petId}
+                      {petNames[application.petId] || 'Cargando...'}
                     </p>
                   </div>
                 </div>

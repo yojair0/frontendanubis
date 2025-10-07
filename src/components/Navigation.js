@@ -82,24 +82,6 @@ const Navigation = ({ currentView, setCurrentView }) => {
           </button>
           )}
 
-           {/* Mostrar panel mis mascotas solo para fundacion */}
-
-          {userRole === "FOUNDATION"&& (
-          <button
-            onClick={() => setCurrentView('mypets')}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: currentView === 'mypets' ? '#007bff' : 'transparent',
-              color: 'white',
-              border: '1px solid #007bff',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            Mis Animales
-          </button>
-          )}
-
 
           {/* Mostrar panel admin si el usuario tiene rol de admin */}
 
