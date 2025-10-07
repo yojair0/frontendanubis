@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { applicationService } from '../services/applicationService';
 import { petService } from '../services/petService';
+import PetForm from './PetForm';
 
 const FoundationPanel = () => {
   const [applications, setApplications] = useState([]);
@@ -8,6 +9,8 @@ const FoundationPanel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [showPetForm, setShowPetForm] = useState(false);
+  const [currentView, setCurrentView] = useState('applications'); // 'applications', 'myPets'
 
   useEffect(() => {
     fetchData();
@@ -90,7 +93,54 @@ const FoundationPanel = () => {
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-      <h2>Panel de Fundación - Mis Postulaciones</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h2>Panel de Fundación</h2>
+        
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={() => setCurrentView('applications')}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: currentView === 'applications' ? '#007bff' : '#f8f9fa',
+              color: currentView === 'applications' ? 'white' : '#333',
+              border: '1px solid #007bff',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            Postulaciones
+          </button>
+          
+          <button
+            onClick={() => setCurrentView('myPets')}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: currentView === 'myPets' ? '#007bff' : '#f8f9fa',
+              color: currentView === 'myPets' ? 'white' : '#333',
+              border: '1px solid #007bff',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            Mis Mascotas
+          </button>
+          
+          <button
+            onClick={() => setShowPetForm(true)}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#28a745',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+          >
+            + Registrar Mascota
+          </button>
+        </div>
+      </div>
 
       {/* Estadísticas */}
       <div style={{
@@ -117,13 +167,15 @@ const FoundationPanel = () => {
         </div>
       </div>
 
-      {/* Lista de postulaciones */}
-      <h3>Postulaciones a Mis Mascotas</h3>
-      {applications.length === 0 ? (
-        <p style={{ textAlign: 'center', color: '#666' }}>No hay postulaciones.</p>
-      ) : (
-        <div>
-          {applications.map((application) => (
+      {/* Contenido condicional */}
+      {currentView === 'applications' && (
+        <>
+          <h3>Postulaciones a Mis Mascotas</h3>
+          {applications.length === 0 ? (
+            <p style={{ textAlign: 'center', color: '#666' }}>No hay postulaciones.</p>
+          ) : (
+            <div>
+              {applications.map((application) => (
             <div key={application.id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '20px', marginBottom: '20px', backgroundColor: '#fff' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                 <h4>Postulación #{application.id.slice(-6)}</h4>
@@ -168,7 +220,29 @@ const FoundationPanel = () => {
               )}
             </div>
           ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {currentView === 'myPets' && (
+        <div>
+          <h3>Mis Mascotas Registradas</h3>
+          <p style={{ textAlign: 'center', color: '#666' }}>
+            Aquí verás todas las mascotas que has registrado para adopción.
+          </p>
         </div>
+      )}
+
+      {/* Modal de formulario de mascota */}
+      {showPetForm && (
+        <PetForm
+          onClose={() => setShowPetForm(false)}
+          onSuccess={() => {
+            setShowPetForm(false);
+            fetchData(); // Recargar datos
+          }}
+        />
       )}
     </div>
   );

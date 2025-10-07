@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from './Toast';
 
 const RegisterForm = ({ onSwitchToLogin, onRegistrationSuccess }) => {
+  const toast = useToast();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -20,7 +22,7 @@ const RegisterForm = ({ onSwitchToLogin, onRegistrationSuccess }) => {
 
     try {
       await register(formData);
-      alert('Registro exitoso. Revisa tu email para el código de verificación.');
+      toast.success('🎉 ¡Registro exitoso! Revisa tu email para el código de verificación.', 6000);
       if (onRegistrationSuccess) {
         onRegistrationSuccess(formData.email);
       }

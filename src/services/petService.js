@@ -33,7 +33,7 @@ export const petService = {
     return response.data; // { imageUrl: '...' }
   },
 
-  // Crear una nueva mascota (solo fundación)
+  // Crear una nueva mascota (fundación o admin)
   createPet: async (petData) => {
     const response = await api.post('/pets', petData);
     return response.data;

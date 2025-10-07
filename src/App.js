@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ToastProvider } from './components/Toast';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import VerificationForm from './components/VerificationForm';
@@ -10,6 +11,8 @@ import Navigation from './components/Navigation';
 import './App.css';
 import FoundationPanel from './components/FundationPanel';
 import MyPetList from './components/MyPetList';
+import UserManagement from './components/UserManagement';
+import UserProfile from './components/UserProfile';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -66,6 +69,10 @@ function AppContent() {
         return <FoundationPanel />;
       case 'mypets':
         return <MyPetList />;
+      case 'userManagement':
+        return <UserManagement />;
+      case 'profile':
+        return <UserProfile />;
       default:
         setCurrentView('pets');
         return <PetsList />;
@@ -82,9 +89,11 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ToastProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ToastProvider>
   );
 }
 

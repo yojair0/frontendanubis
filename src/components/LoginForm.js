@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from './Toast';
 
 const LoginForm = ({ onSwitchToRegister }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const LoginForm = ({ onSwitchToRegister }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const toast = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,9 +19,11 @@ const LoginForm = ({ onSwitchToRegister }) => {
 
     try {
       await login(formData.email, formData.password);
-      alert('Login exitoso.');
+      toast.success('¡Bienvenido! Has iniciado sesión correctamente.', 3000);
     } catch (error) {
-      setError(error.response?.data?.message || 'Error en el login');
+      const errorMessage = error.response?.data?.message || 'Error en el login';
+      setError(errorMessage);
+      toast.error(errorMessage, 5000);
     } finally {
       setLoading(false);
     }

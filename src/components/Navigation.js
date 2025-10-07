@@ -135,6 +135,38 @@ const Navigation = ({ currentView, setCurrentView }) => {
               Panel Fundacion
             </button>
           )}
+
+          {/* Gestión de Usuarios - Solo Admin */}
+          {userRole === "ADMIN" && (
+            <button
+              onClick={() => setCurrentView('userManagement')}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: currentView === 'userManagement' ? '#007bff' : 'transparent',
+                color: 'white',
+                border: '1px solid #007bff',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              Gestionar Usuarios
+            </button>
+          )}
+
+          {/* Perfil - Todos los usuarios */}
+          <button
+            onClick={() => setCurrentView('profile')}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: currentView === 'profile' ? '#007bff' : 'transparent',
+              color: 'white',
+              border: '1px solid #007bff',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Mi Perfil
+          </button>
           
           <div style={{ color: 'white', fontSize: '14px' }}>
             Hola, {user.fullName}
