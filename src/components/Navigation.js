@@ -132,7 +132,7 @@ const Navigation = ({ currentView, setCurrentView }) => {
                 cursor: 'pointer'
               }}
             >
-              Panel Fundacion
+              Panel Fundación
             </button>
           )}
 
