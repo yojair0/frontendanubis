@@ -7,7 +7,7 @@ const MyPetsList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showPetForm, setShowPetForm] = useState(false);
-  const [petToEdit, setPetToEdit] = useState(null);
+  const [petToEdit, setPetToEdit] = useState(null); // Si es null => crear; si no => editar
 
   useEffect(() => {
     fetchPets();
@@ -39,67 +39,66 @@ const MyPetsList = () => {
     }
   };
 
-  if (loading) return <div style={{ textAlign: 'center' }}>Cargando mascotas...</div>;
-  if (error) return <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>;
+  const handleEdit = (pet) => {
+    setPetToEdit(pet);
+    setShowPetForm(true);
+  };
+
+  const handleAddNew = () => {
+    setPetToEdit(null); // Esto asegura que sea formulario vacío
+    setShowPetForm(true);
+  };
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
       <h2>Mis Mascotas Publicadas</h2>
 
-      {/* Botón para agregar nueva mascota */}
       <button
         style={{ marginBottom: '20px' }}
-        onClick={() => {
-          setPetToEdit(null); // null = nueva mascota
-          setShowPetForm(true);
-        }}
+        onClick={handleAddNew}
       >
         Agregar Nueva Mascota
       </button>
 
-      {pets.length === 0 ? (
+      {loading ? (
+        <p style={{ textAlign: 'center' }}>Cargando mascotas...</p>
+      ) : error ? (
+        <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>
+      ) : pets.length === 0 ? (
         <p style={{ textAlign: 'center', color: '#555' }}>Aún no has registrado mascotas.</p>
       ) : (
-        <div>
-          {pets.map(pet => (
-            <div
-              key={pet.id}
-              style={{
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-                padding: '20px',
-                marginBottom: '20px',
-                backgroundColor: '#f8f9fa'
-              }}
-            >
-              <h3 style={{ marginBottom: '10px' }}>{pet.name}</h3>
-              <p><strong>Especie:</strong> {pet.species}</p>
-              <p><strong>Raza:</strong> {pet.breed}</p>
-              <p><strong>Edad:</strong> {pet.age} años</p>
-              <p><strong>Género:</strong> {pet.gender}</p>
-              <p><strong>Tamaño:</strong> {pet.size}</p>
-              <p><strong>Descripción:</strong> {pet.description}</p>
+        pets.map(pet => (
+          <div
+            key={pet.id}
+            style={{
+              border: '1px solid #ccc',
+              borderRadius: '8px',
+              padding: '20px',
+              marginBottom: '20px',
+              backgroundColor: '#f8f9fa'
+            }}
+          >
+            <h3 style={{ marginBottom: '10px' }}>{pet.name}</h3>
+            <p><strong>Especie:</strong> {pet.species}</p>
+            <p><strong>Raza:</strong> {pet.breed}</p>
+            <p><strong>Edad:</strong> {pet.age} años</p>
+            <p><strong>Género:</strong> {pet.gender}</p>
+            <p><strong>Tamaño:</strong> {pet.size}</p>
+            <p><strong>Descripción:</strong> {pet.description}</p>
 
-              <div style={{ marginTop: '10px' }}>
-                <button
-                  onClick={() => {
-                    setPetToEdit(pet);
-                    setShowPetForm(true);
-                  }}
-                  style={{ marginRight: '10px' }}
-                >
-                  Editar
-                </button>
-                <button onClick={() => handleDelete(pet.id)} style={{ color: 'red' }}>
-                  Eliminar
-                </button>
-              </div>
+            <div style={{ marginTop: '10px' }}>
+              <button onClick={() => handleEdit(pet)} style={{ marginRight: '10px' }}>
+                Editar
+              </button>
+              <button onClick={() => handleDelete(pet.id)} style={{ color: 'red' }}>
+                Eliminar
+              </button>
             </div>
-          ))}
-        </div>
+          </div>
+        ))
       )}
 
-      {/* Modal PetForm solo cuando showPetForm = true */}
+      {/* Formulario de mascota */}
       {showPetForm && (
         <PetForm
           pet={petToEdit}

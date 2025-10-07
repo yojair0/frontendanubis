@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { petService } from '../services/petService';
 
-const PetForm = ({ onClose, onSuccess }) => {
+const PetForm = ({ pet, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     name: '',
     species: '',
@@ -16,6 +16,34 @@ const PetForm = ({ onClose, onSuccess }) => {
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Prellenar datos si es edición
+  useEffect(() => {
+    if (pet) {
+      setFormData({
+        name: pet.name || '',
+        species: pet.species || '',
+        breed: pet.breed || '',
+        age: pet.age || '',
+        gender: pet.gender || '',
+        size: pet.size || '',
+        description: pet.description || '',
+        imageUrls: pet.imageUrls || []
+      });
+    } else {
+      // Reset si es nuevo
+      setFormData({
+        name: '',
+        species: '',
+        breed: '',
+        age: '',
+        gender: '',
+        size: '',
+        description: '',
+        imageUrls: []
+      });
+    }
+  }, [pet]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,6 +62,7 @@ const PetForm = ({ onClose, onSuccess }) => {
 
     try {
       const { imageUrl } = await petService.uploadPetImage(imageFile);
+      console.log("URL subida:", imageUrl);
       setFormData(prev => ({
         ...prev,
         imageUrls: [...prev.imageUrls, imageUrl]
@@ -51,13 +80,21 @@ const PetForm = ({ onClose, onSuccess }) => {
     setError('');
 
     try {
-      await petService.createPet(formData);
-      alert('Mascota registrada exitosamente');
+      if (pet) {
+        // Editar
+        await petService.updatePet(pet.id, formData);
+        alert('Mascota actualizada exitosamente');
+      } else {
+        // Crear nueva
+        await petService.createPet(formData);
+        alert('Mascota registrada exitosamente');
+      }
+
       onSuccess && onSuccess();
       onClose && onClose();
     } catch (err) {
       console.log(formData);
-      setError(err.response?.data?.message || 'Error al registrar la mascota');
+      setError(err.response?.data?.message || 'Error al guardar la mascota');
     } finally {
       setLoading(false);
     }
@@ -67,7 +104,7 @@ const PetForm = ({ onClose, onSuccess }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Registrar Nueva Mascota</h2>
+          <h2>{pet ? 'Editar Mascota' : 'Registrar Nueva Mascota'}</h2>
           <button onClick={onClose} className="close-btn">×</button>
         </div>
 
@@ -199,7 +236,7 @@ const PetForm = ({ onClose, onSuccess }) => {
               disabled={loading || formData.imageUrls.length === 0}
               className="btn-primary"
             >
-              {loading ? 'Registrando...' : 'Registrar Mascota'}
+              {loading ? 'Guardando...' : pet ? 'Guardar Cambios' : 'Registrar Mascota'}
             </button>
           </div>
         </form>

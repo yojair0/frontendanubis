@@ -39,7 +39,7 @@ export const petService = {
     return response.data;
   },
 
-  // Actualizar una mascota (fundación o admin)
+  // Actualizar una mascota (fundación)
   updatePet: async (id, petData) => {
     const response = await api.put(`/pets/${id}`, petData);
     return response.data;
