@@ -184,20 +184,10 @@ const ImageCarouselPreview = ({ images, onRemoveImage }) => {
 };
 
 const PetForm = ({ pet, onClose, onSuccess }) => {
-  const { user } = useAuth(); // ✅ Obtener usuario del contexto
+  const { user } = useAuth(); // Obtener usuario del contexto
   const toast = useToast();
   
-  // Opciones predefinidas
-  const speciesOptions = ['Perro', 'Gato', 'Conejo', 'Hamster', 'Pájaro', 'Pez', 'Otro'];
-  const breedOptions = {
-    'Perro': ['Labrador', 'Golden Retriever', 'Bulldog', 'Pastor Alemán', 'Beagle', 'Chihuahua', 'Mestizo', 'Otro'],
-    'Gato': ['Persa', 'Siamés', 'Maine Coon', 'British Shorthair', 'Ragdoll', 'Mestizo', 'Otro'],
-    'Conejo': ['Holland Lop', 'Netherland Dwarf', 'Lionhead', 'Flemish Giant', 'Otro'],
-    'Hamster': ['Sirio', 'Roborovski', 'Chino', 'Ruso', 'Otro'],
-    'Pájaro': ['Canario', 'Periquito', 'Cockatiel', 'Agapornis', 'Otro'],
-    'Pez': ['Goldfish', 'Betta', 'Guppy', 'Tetra', 'Otro'],
-    'Otro': ['Otro']
-  };
+
   
   const [formData, setFormData] = useState({
     name: '',
@@ -215,10 +205,7 @@ const PetForm = ({ pet, onClose, onSuccess }) => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [customSpecies, setCustomSpecies] = useState('');
-  const [customBreed, setCustomBreed] = useState('');
-  const [showCustomSpecies, setShowCustomSpecies] = useState(false);
-  const [showCustomBreed, setShowCustomBreed] = useState(false);
+
 
   // Prellenar datos si es edición
   useEffect(() => {
@@ -300,7 +287,7 @@ const PetForm = ({ pet, onClose, onSuccess }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result;
-        console.log("✅ Imagen convertida a Base64");
+        console.log("Imagen convertida a Base64");
         
         setFormData(prev => ({
           ...prev,
@@ -347,29 +334,29 @@ const PetForm = ({ pet, onClose, onSuccess }) => {
     try {
       // Debug: verificar token y usuario
       const token = localStorage.getItem('token');
-      console.log('🔑 Token disponible:', !!token);
+      console.log('Token disponible:', !!token);
       console.log('👤 Usuario actual:', user);
       console.log('🎭 Rol del usuario:', user?.role);
-      console.log('📋 Datos del formulario:', formData);
+      console.log('Datos del formulario:', formData);
 
       if (pet) {
         // Editar
         await petService.updatePet(pet.id, formData);
-        toast.success('🎉 ¡Mascota actualizada exitosamente!', 4000);
+        toast.success('¡Mascota actualizada exitosamente!', 4000);
       } else {
         // Crear nueva
         console.log('🆕 Creando nueva mascota...');
         await petService.createPet(formData);
-        toast.success('🎉 ¡Mascota registrada exitosamente! Ya aparece en el listado.', 5000);
+        toast.success('¡Mascota registrada exitosamente! Ya aparece en el listado.', 5000);
       }
 
       onSuccess && onSuccess();
       onClose && onClose();
     } catch (err) {
-      console.error('❌ Error completo:', err);
-      console.error('📡 Response:', err.response);
-      console.error('📄 Response data:', err.response?.data);
-      console.error('🔢 Status:', err.response?.status);
+      console.error('Error completo:', err);
+      console.error('Response:', err.response);
+      console.error('Response data:', err.response?.data);
+      console.error('Status:', err.response?.status);
       setError(err.response?.data?.message || 'Error al guardar la mascota');
     } finally {
       setLoading(false);
@@ -403,70 +390,25 @@ const PetForm = ({ pet, onClose, onSuccess }) => {
 
             <div className="form-group">
               <label>Especie *</label>
-              <select
+              <input
+                type="text"
                 name="species"
-                value={showCustomSpecies ? 'Otro' : formData.species}
-                onChange={(e) => {
-                  if (e.target.value === 'Otro') {
-                    setShowCustomSpecies(true);
-                    setFormData(prev => ({ ...prev, species: '', breed: '' }));
-                  } else {
-                    setShowCustomSpecies(false);
-                    handleInputChange(e);
-                    setFormData(prev => ({ ...prev, breed: '' }));
-                  }
-                }}
+                value={formData.species}
+                onChange={handleInputChange}
+                placeholder="Ejemplo: Perro, Gato, Conejo, etc."
                 required
-              >
-                <option value="">Selecciona una especie</option>
-                {speciesOptions.map(species => (
-                  <option key={species} value={species}>{species}</option>
-                ))}
-              </select>
-              {showCustomSpecies && (
-                <input
-                  type="text"
-                  name="species"
-                  value={formData.species}
-                  onChange={handleInputChange}
-                  placeholder="Especifica la especie"
-                  required
-                  style={{ marginTop: '8px' }}
-                />
-              )}
+              />
             </div>
 
             <div className="form-group">
-              <label>Raza</label>
-              <select
+              <label>Raza (Opcional)</label>
+              <input
+                type="text"
                 name="breed"
-                value={showCustomBreed ? 'Otro' : formData.breed}
-                onChange={(e) => {
-                  if (e.target.value === 'Otro') {
-                    setShowCustomBreed(true);
-                    setFormData(prev => ({ ...prev, breed: '' }));
-                  } else {
-                    setShowCustomBreed(false);
-                    handleInputChange(e);
-                  }
-                }}
-                disabled={!formData.species || showCustomSpecies}
-              >
-                <option value="">Selecciona una raza</option>
-                {formData.species && breedOptions[formData.species] && breedOptions[formData.species].map(breed => (
-                  <option key={breed} value={breed}>{breed}</option>
-                ))}
-              </select>
-              {showCustomBreed && (
-                <input
-                  type="text"
-                  name="breed"
-                  value={formData.breed}
-                  onChange={handleInputChange}
-                  placeholder="Especifica la raza"
-                  style={{ marginTop: '8px' }}
-                />
-              )}
+                value={formData.breed}
+                onChange={handleInputChange}
+                placeholder="Ejemplo: Labrador, Mestizo, Persa, etc."
+              />
             </div>
 
             <div className="form-group">

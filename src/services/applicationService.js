@@ -33,7 +33,7 @@ export const applicationService = {
     try {
       tokenPayload = JSON.parse(atob(token.split('.')[1]));
     } catch (e) {
-      console.error('❌ Error decodificando token:', e);
+      console.error('Error decodificando token:', e);
     }
     
     const body = { status, foundationResponse };

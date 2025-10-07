@@ -299,28 +299,6 @@ const UserProfile = () => {
           )}
         </div>
 
-        {/* Información de la cuenta */}
-        <div className="profile-section">
-          <h3>Información de la Cuenta</h3>
-          <div className="account-stats">
-            <div className="stat-item">
-              <strong>Estado de verificación:</strong>
-              <span className={`verification-status ${user?.emailVerified ? 'verified' : 'pending'}`}>
-                {user?.emailVerified ? '✓ Verificado' : '⏳ Pendiente'}
-              </span>
-            </div>
-            
-            <div className="stat-item">
-              <strong>Fecha de registro:</strong>
-              <span>{user?.createdAt ? new Date(user.createdAt).toLocaleDateString('es-ES') : 'N/A'}</span>
-            </div>
-            
-            <div className="stat-item">
-              <strong>Último acceso:</strong>
-              <span>{user?.lastLogin ? new Date(user.lastLogin).toLocaleDateString('es-ES') : 'N/A'}</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

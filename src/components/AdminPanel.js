@@ -36,10 +36,10 @@ const AdminNotesModal = ({ isOpen, onClose, onSubmit, action, applicationId }) =
 
   const getActionText = () => {
     switch (action) {
-      case 'ACCEPTED': return { title: 'Aprobar Postulación', color: '#28a745', icon: '✅' };
-      case 'REJECTED': return { title: 'Rechazar Postulación', color: '#dc3545', icon: '❌' };
-      case 'PENDING': return { title: 'Volver a Pendiente', color: '#ffc107', icon: '⏳' };
-      default: return { title: 'Actualizar Estado', color: '#6c757d', icon: '📝' };
+      case 'ACCEPTED': return { title: 'Aprobar Postulación', color: '#28a745', icon: '' };
+      case 'REJECTED': return { title: '                      Rechazar', color: '#dc3545', icon: '' };
+      case 'PENDING': return { title: 'Volver a Pendiente', color: '#ffc107', icon: '' };
+      default: return { title: 'Actualizar Estado', color: '#6c757d', icon: '' };
     }
   };
 
@@ -272,7 +272,7 @@ const AdminPanel = () => {
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        console.log('🔑 ADMIN PANEL - Token decodificado:');
+        console.log('ADMIN PANEL - Token decodificado:');
         console.log('  - Subject (userId):', payload.sub);
         console.log('  - Role:', payload.role);
         console.log('  - Expires:', new Date(payload.exp * 1000));
@@ -301,7 +301,7 @@ const AdminPanel = () => {
   if (user.role !== 'ADMIN' && user.role !== 'FOUNDATION') {
     return (
       <div style={{ textAlign: 'center', padding: '40px' }}>
-        <h3>🚫 Permisos insuficientes</h3>
+        <h3>Permisos insuficientes</h3>
         <p>Solo los administradores y fundaciones pueden acceder a este panel.</p>
         <p>Tu rol actual: {user.role || 'No definido'}</p>
       </div>
@@ -372,12 +372,12 @@ const AdminPanel = () => {
 
   const handleUpdateApplicationStatus = async (applicationId, newStatus, foundationResponse = '') => {
     try {
-      console.log('🔄 Actualizando aplicación:', { applicationId, newStatus, foundationResponse });
+      console.log('Actualizando aplicación:', { applicationId, newStatus, foundationResponse });
       
       // Debug: verificar token y usuario
       const token = localStorage.getItem('token');
-      console.log('🔑 Token presente:', !!token);
-      console.log('🔑 Token (primeros 20 chars):', token?.substring(0, 20));
+      console.log('Token presente:', !!token);
+      console.log('Token (primeros 20 chars):', token?.substring(0, 20));
       console.log('👤 Usuario actual:', user);
       console.log('🎭 Rol del usuario:', user?.role);
       
@@ -389,7 +389,7 @@ const AdminPanel = () => {
         result = await applicationService.updateApplicationStatus(applicationId, newStatus, foundationResponse);
 
       } catch (primaryError) {
-        console.warn('⚠️ Endpoint principal falló, probando alternativo...');
+        console.warn('Endpoint principal falló, probando alternativo...');
         try {
           result = await applicationService.updateApplicationStatusAlternative(applicationId, newStatus, foundationResponse);
 
@@ -418,13 +418,13 @@ const AdminPanel = () => {
       );
       
       const statusText = newStatus === 'ACCEPTED' ? 'aprobada' : newStatus === 'REJECTED' ? 'rechazada' : 'actualizada';
-      const icon = newStatus === 'ACCEPTED' ? '✅' : newStatus === 'REJECTED' ? '❌' : '📝';
+      const icon = newStatus === 'ACCEPTED' ? '' : newStatus === 'REJECTED' ? '' : '';
       toast.success(`${icon} ¡Postulación ${statusText} exitosamente!`, 4000);
     } catch (err) {
       console.error('Error completo:', err);
-      console.error('📡 Response error:', err.response);
-      console.error('📄 Response data:', err.response?.data);
-      console.error('🔢 Status code:', err.response?.status);
+      console.error('Response error:', err.response);
+      console.error('Response data:', err.response?.data);
+      console.error('Status code:', err.response?.status);
       
       const errorMessage = err.response?.data?.message || err.message || 'Error desconocido';
       setError(`Error al actualizar la postulación: ${errorMessage}`);
@@ -444,7 +444,7 @@ const AdminPanel = () => {
         setDeleting(applicationId);
         await applicationService.deleteApplication(applicationId);
         setApplications(prev => prev.filter(app => app.id !== applicationId));
-        toast.success('🗑️ ¡Postulación eliminada exitosamente!', 4000);
+        toast.success('¡Postulación eliminada exitosamente!', 4000);
       } catch (err) {
         console.error('Error:', err);
         setError('Error al eliminar la postulación');
@@ -506,7 +506,7 @@ const AdminPanel = () => {
       try {
         await petService.deletePet(petId);
         setAllPets(prev => prev.filter(pet => pet.id !== petId));
-        toast.success('🗑️ ¡Mascota eliminada exitosamente!', 4000);
+        toast.success('¡Mascota eliminada exitosamente!', 4000);
       } catch (err) {
         console.error('Error:', err);
         setError('Error al eliminar la mascota');
@@ -556,7 +556,7 @@ const AdminPanel = () => {
               fontWeight: 'bold'
             }}
           >
-            📋 Postulaciones
+            Postulaciones
           </button>
           
           <button
@@ -755,7 +755,7 @@ const AdminPanel = () => {
                       onClick={() => {
 
                         if (!application.id) {
-                          toast.error('❌ Error: ID de aplicación no válido', 4000);
+                          toast.error('Error: ID de aplicación no válido', 4000);
                           return;
                         }
                         handleOpenNotesModal(application.id, 'ACCEPTED');
@@ -773,16 +773,16 @@ const AdminPanel = () => {
                         fontWeight: 'bold'
                       }}
                     >
-                      ✅ Aprobar
+                      Aprobar
                     </button>
                   )}
 
                   {application.status !== 'REJECTED' && (
                     <button
                       onClick={() => {
-                        console.log('🔴 Botón RECHAZAR clickeado para:', application);
+                        console.log('Botón RECHAZAR clickeado para:', application);
                         if (!application.id) {
-                          toast.error('❌ Error: ID de aplicación no válido', 4000);
+                          toast.error('Error: ID de aplicación no válido', 4000);
                           return;
                         }
                         handleOpenNotesModal(application.id, 'REJECTED');
@@ -800,7 +800,7 @@ const AdminPanel = () => {
                         fontWeight: 'bold'
                       }}
                     >
-                      ❌ Rechazar
+                      Rechazar
                     </button>
                   )}
 
@@ -822,7 +822,7 @@ const AdminPanel = () => {
                         fontWeight: 'bold'
                       }}
                     >
-                      ⏳ Volver a Pendiente
+                      Volver a Pendiente
                     </button>
                   )}
                 </div>
@@ -847,7 +847,7 @@ const AdminPanel = () => {
                       fontWeight: 'bold'
                     }}
                   >
-                    {deleting === application.id ? 'Procesando...' : '🗑️ Eliminar Permanentemente'}
+                    {deleting === application.id ? 'Procesando...' : 'Eliminar Permanentemente'}
                   </button>
                 </div>
               </div>
@@ -976,7 +976,7 @@ const AdminPanel = () => {
                           fontWeight: 'bold'
                         }}
                       >
-                        ✏️ Editar
+                        Editar
                       </button>
                       
                       <button
@@ -993,7 +993,7 @@ const AdminPanel = () => {
                           fontWeight: 'bold'
                         }}
                       >
-                        🗑️ Eliminar
+                        Eliminar
                       </button>
                     </div>
                   </div>

@@ -17,13 +17,13 @@ const ApplicationsList = () => {
         
         // Solo mostrar toast una vez cuando se cargan las postulaciones
         if (applicationsData.length > 0 && !hasShownToast) {
-          toast.info(`📋 Encontraste ${applicationsData.length} postulación${applicationsData.length !== 1 ? 'es' : ''}`);
+          toast.info(`Encontraste ${applicationsData.length} postulación${applicationsData.length !== 1 ? 'es' : ''}`);
           setHasShownToast(true);
         }
       } catch (error) {
         console.error('Error:', error);
         if (!hasShownToast) {
-          toast.error('❌ Error al cargar las postulaciones. Por favor intenta de nuevo.');
+          toast.error('Error al cargar las postulaciones. Por favor intenta de nuevo.');
           setHasShownToast(true);
         }
       } finally {
@@ -37,14 +37,14 @@ const ApplicationsList = () => {
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '20px' }}>
-        🔄 Cargando postulaciones...
+        Cargando postulaciones...
       </div>
     );
   }
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-      <h2>📋 Mis Postulaciones</h2>
+      <h2>Mis Postulaciones</h2>
       {applications.length === 0 ? (
         <div style={{
           textAlign: 'center', 
@@ -53,7 +53,7 @@ const ApplicationsList = () => {
           borderRadius: '15px',
           border: '2px dashed #dee2e6'
         }}>
-          <div style={{ fontSize: '80px', marginBottom: '20px' }}>🐾</div>
+          <div style={{ fontSize: '80px', marginBottom: '20px' }}></div>
           <h3 style={{ color: '#6c757d', marginBottom: '10px' }}>No tienes postulaciones aún</h3>
           <p style={{ color: '#adb5bd', maxWidth: '400px', margin: '0 auto' }}>
             Explora las mascotas disponibles y postúlate para adoptar. Tus solicitudes aparecerán aquí para que puedas seguir su estado.
@@ -73,10 +73,10 @@ const ApplicationsList = () => {
 
             const getStatusText = (status) => {
               switch (status?.toLowerCase()) {
-                case 'pending': return '⏳ Pendiente';
-                case 'approved': return '✅ Aprobada';
-                case 'rejected': return '❌ Rechazada';
-                default: return `📝 ${status}`;
+                case 'pending': return 'Pendiente';
+                case 'approved': return 'Aprobada';
+                case 'rejected': return 'Rechazada';
+                default: return status;
               }
             };
 
@@ -108,7 +108,7 @@ const ApplicationsList = () => {
                     color: '#333',
                     fontSize: '20px'
                   }}>
-                    📋 Postulación #{application.id?.slice(-6) || 'N/A'}
+                    Postulación #{application.id?.slice(-6) || 'N/A'}
                   </h3>
                   <span style={{
                     background: getStatusColor(application.status),
@@ -134,7 +134,7 @@ const ApplicationsList = () => {
                     borderRadius: '10px'
                   }}>
                     <p style={{ margin: '0 0 8px 0' }}>
-                      <strong style={{ color: '#495057' }}>📅 Fecha de solicitud:</strong>
+                      <strong style={{ color: '#495057' }}>Fecha de solicitud:</strong>
                     </p>
                     <p style={{ margin: 0, color: '#333', fontSize: '16px' }}>
                       {new Date(application.createdAt).toLocaleDateString('es-ES', {
@@ -151,7 +151,7 @@ const ApplicationsList = () => {
                     borderRadius: '10px'
                   }}>
                     <p style={{ margin: '0 0 8px 0' }}>
-                      <strong style={{ color: '#495057' }}>🏷️ ID de Mascota:</strong>
+                      <strong style={{ color: '#495057' }}>ID de Mascota:</strong>
                     </p>
                     <p style={{ 
                       margin: 0, 
@@ -174,7 +174,7 @@ const ApplicationsList = () => {
                   borderRadius: '10px',
                   marginBottom: '15px'
                 }}>
-                  <h4 style={{ margin: '0 0 10px 0', color: '#495057' }}>💭 Tu motivo para adoptar:</h4>
+                  <h4 style={{ margin: '0 0 10px 0', color: '#495057' }}>Tu motivo para adoptar:</h4>
                   <p style={{ 
                     margin: 0, 
                     color: '#333', 
@@ -197,7 +197,7 @@ const ApplicationsList = () => {
                       color: '#856404',
                       fontSize: '16px'
                     }}>
-                      💬 Nota del administrador:
+                      Nota del administrador:
                     </h4>
                     <p style={{ 
                       margin: 0, 

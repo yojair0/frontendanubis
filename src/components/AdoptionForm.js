@@ -175,7 +175,7 @@ const AdoptionForm = ({ pet, onClose, onSuccess }) => {
 
     try {
       await applicationService.createApplication(formData);
-      toast.success('🎉 ¡Postulación enviada exitosamente! Te contactaremos pronto.', 5000);
+      toast.success('¡Postulación enviada exitosamente! Te contactaremos pronto.', 5000);
       onSuccess && onSuccess();
       onClose && onClose();
     } catch (err) {

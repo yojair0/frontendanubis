@@ -22,7 +22,7 @@ const RegisterForm = ({ onSwitchToLogin, onRegistrationSuccess }) => {
 
     try {
       await register(formData);
-      toast.success('🎉 ¡Registro exitoso! Revisa tu email para el código de verificación.', 6000);
+      toast.success('¡Registro exitoso! Revisa tu email para el código de verificación.', 6000);
       if (onRegistrationSuccess) {
         onRegistrationSuccess(formData.email);
       }

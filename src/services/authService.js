@@ -51,20 +51,20 @@ export const authService = {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         const now = Date.now() / 1000;
-        console.log('🔑 Token info:');
+        console.log('Token info:');
         console.log('  - Token expires at:', new Date(payload.exp * 1000));
         console.log('  - Current time:', new Date(now * 1000));
         console.log('  - Token valid:', payload.exp > now);
         console.log('  - User role from token:', payload.role);
         
         if (payload.exp <= now) {
-          console.warn('⚠️ Token expirado, removiendo...');
+          console.warn('Token expirado, removiendo...');
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           return null;
         }
       } catch (e) {
-        console.error('❌ Error decodificando token:', e);
+        console.error('Error decodificando token:', e);
       }
     }
     
