@@ -105,12 +105,9 @@ const UserManagement = () => {
         await userService.createUser(formData);
         alert('Usuario creado exitosamente');
       } else if (modalType === 'edit') {
-        const updateData = { ...formData };
-        if (!updateData.password) {
-          delete updateData.password; // No enviar contraseña vacía
-        }
-        await userService.updateUser(selectedUser.id, updateData);
-        alert('Usuario actualizado exitosamente');
+        // Usar el endpoint específico para actualizar rol
+        await userService.updateUserRole(selectedUser.id, formData.role);
+        alert('Rol de usuario actualizado exitosamente');
       }
       
       setShowModal(false);
@@ -300,65 +297,114 @@ const UserManagement = () => {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit}>
-                  <div className="form-group">
-                    <label>Nombre Completo</label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
+                  {modalType === 'edit' ? (
+                    // Solo mostrar campos de solo lectura y rol editable para edición
+                    <>
+                      <div className="form-group">
+                        <label>Nombre Completo</label>
+                        <input
+                          type="text"
+                          value={formData.fullName}
+                          disabled
+                          style={{ backgroundColor: '#f8f9fa', cursor: 'not-allowed' }}
+                        />
+                      </div>
 
-                  <div className="form-group">
-                    <label>Email</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
+                      <div className="form-group">
+                        <label>Email</label>
+                        <input
+                          type="email"
+                          value={formData.email}
+                          disabled
+                          style={{ backgroundColor: '#f8f9fa', cursor: 'not-allowed' }}
+                        />
+                      </div>
 
-                  <div className="form-group">
-                    <label>
-                      Contraseña {modalType === 'edit' && '(dejar vacío para mantener actual)'}
-                    </label>
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required={modalType === 'create'}
-                      placeholder={modalType === 'edit' ? 'Nueva contraseña (opcional)' : ''}
-                    />
-                  </div>
+                      <div className="form-group">
+                        <label>Teléfono</label>
+                        <input
+                          type="tel"
+                          value={formData.phone}
+                          disabled
+                          style={{ backgroundColor: '#f8f9fa', cursor: 'not-allowed' }}
+                        />
+                      </div>
 
-                  <div className="form-group">
-                    <label>Teléfono</label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                    />
-                  </div>
+                      <div className="form-group">
+                        <label>Rol</label>
+                        <select
+                          name="role"
+                          value={formData.role}
+                          onChange={handleInputChange}
+                          required
+                        >
+                          <option value="USER">Usuario</option>
+                          <option value="FOUNDATION">Fundación</option>
+                          <option value="ADMIN">Administrador</option>
+                        </select>
+                      </div>
+                    </>
+                  ) : (
+                    // Mostrar todos los campos editables para creación
+                    <>
+                      <div className="form-group">
+                        <label>Nombre Completo</label>
+                        <input
+                          type="text"
+                          name="fullName"
+                          value={formData.fullName}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
 
-                  <div className="form-group">
-                    <label>Rol</label>
-                    <select
-                      name="role"
-                      value={formData.role}
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option value="USER">Usuario</option>
-                      <option value="FOUNDATION">Fundación</option>
-                      <option value="ADMIN">Administrador</option>
-                    </select>
-                  </div>
+                      <div className="form-group">
+                        <label>Email</label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label>Contraseña</label>
+                        <input
+                          type="password"
+                          name="password"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label>Teléfono</label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label>Rol</label>
+                        <select
+                          name="role"
+                          value={formData.role}
+                          onChange={handleInputChange}
+                          required
+                        >
+                          <option value="USER">Usuario</option>
+                          <option value="FOUNDATION">Fundación</option>
+                          <option value="ADMIN">Administrador</option>
+                        </select>
+                      </div>
+                    </>
+                  )}
 
                   <div className="form-actions">
                     <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">
